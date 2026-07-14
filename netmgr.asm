@@ -109,6 +109,7 @@ updown:
     mov     esi, SIOCGIFFLAGS
     lea     rdx, [rel ifreq]
     call    do_ioctl
+    js      err_exit
 
     test    r8, r8
     jz      clear_flag
@@ -119,6 +120,7 @@ clear_flag:
 set_flag:
     mov     esi, SIOCSIFFLAGS
     call    do_ioctl
+    js      err_exit
     jmp     ok_exit
 
 do_addr:
@@ -155,6 +157,7 @@ addr_go:
     mov     esi, SIOCSIFNETMASK
     lea     rdx, [rel ifreq]
     call    do_ioctl
+    js      err_exit
     jmp     ok_exit
 
 do_route:
@@ -278,6 +281,7 @@ do_ioctl:
     mov     eax, SYS_ioctl
     mov     edi, r12d
     syscall
+    test    eax, eax
     ret
 
 writestdout1:
@@ -311,7 +315,7 @@ nd:
     ret
 
 section .data
-help_msg: db "show up down addr route <if>",0x0a
+help_msg: db "show up down addr rte if",0x0a
 help_len: equ $-help_msg
 lo_name:  db "lo",0
 errmsg:   db "err",0x0a
@@ -323,4 +327,3 @@ section .bss
 ifreq:   resb IFREQ_SIZE
 rtentry: resb RTENTRY_SIZE
 nbuf:    resb 24
-

@@ -180,9 +180,8 @@ _start:
     jmp     .die
 
 .usage:
-    mov     edi, 1
-    mov     eax, SYS_exit
-    syscall
+    lea     rsi, [rel msg_usage]
+    mov     edx, musg_len
 
 .die:
     mov     edi, STDERR
@@ -212,11 +211,15 @@ do_warn_and_confirm:
     lea     rsi, [rel confirm_buf]
     mov     edx, 8
     syscall
-    cmp     rax, 2
+    cmp     rax, 4
     jl      .no
     cmp     byte [confirm_buf], 's'
     jne     .no
-    cmp     byte [confirm_buf+1], 0x0A
+    cmp     byte [confirm_buf+1], 'i'
+    jne     .no
+    cmp     byte [confirm_buf+2], 'm'
+    jne     .no
+    cmp     byte [confirm_buf+3], 0x0A
     jne     .no
     mov     eax, 1
     ret
@@ -427,27 +430,29 @@ strs_equal:
     ret
 
 section .data
-msg_warn1:     db "aviso isso vai apagar todo o conteudo de ", 0
+msg_usage:     db "uso install <src> <dst> [letra]", 0x0a
+musg_len:      equ $ - msg_usage
+msg_warn1:     db "aviso apaga tudo em ", 0
 mw1_len:       equ $ - msg_warn1 - 1
-msg_warn2:     db ". digite s e enter para continuar: ", 0
+msg_warn2:     db " sim p/ confirmar ", 0
 mw2_len:       equ $ - msg_warn2 - 1
-msg_cancel:    db 0x0a, "instalacao cancelada.", 0x0a
+msg_cancel:    db 0x0a, "cancelado", 0x0a
 mcanc_len:     equ $ - msg_cancel
-msg_same:      db "sao o msm device burro", 0x0a
+msg_same:      db "install src == dst, abortado", 0x0a
 msame_len:     equ $ - msg_same
-msg_badmbr:    db "install: mbr invalido seu burro", 0x0a
+msg_badmbr:    db "install mbr invalido", 0x0a
 mbmbr_len:     equ $ - msg_badmbr
-msg_badpart:   db "install: sem particao", 0x0a
+msg_badpart:   db "install part1 vazia", 0x0a
 mbpart_len:    equ $ - msg_badpart
-msg_eopen_src: db "install: erro", 0x0a
+msg_eopen_src: db "install erro abrir src", 0x0a
 meos_len:      equ $ - msg_eopen_src
-msg_eopen_dst: db "install: erro 2", 0x0a
+msg_eopen_dst: db "install erro abrir dst", 0x0a
 meod_len:      equ $ - msg_eopen_dst
-msg_eio:       db "install: erro 3", 0x0a
+msg_eio:       db "install erro io", 0x0a
 meio_len:      equ $ - msg_eio
-msg_ok:        db "ok", 0x0a
+msg_ok:        db "install ok", 0x0a
 mok_len:       equ $ - msg_ok
-msg_patched:   db "ajustei", 0x0a
+msg_patched:   db "cmdline ajustada", 0x0a
 mpat_len:      equ $ - msg_patched
 magic:         db "GATINIT_CMDLINE!"
 devsd:         db "/dev/sd"
