@@ -32,9 +32,9 @@ PREFIX  := /usr/local
 DESTDIR :=
 
 UTILS := cat chmod chown clear cp dd df echo free gatito grep \
-         head id kill ls lsblk mkdir mke2fs mount mv netmgr \
-         nice ping ps reboot rm sh sync tail time touch \
-         uname uptime wc whoami install part wget sleep test
+         head id kill ls lsblk mkdir mke2fs mount mv \
+         nice ps reboot rm sh sync tail time touch \
+         uname uptime wc whoami install part sleep test
 
 BINS := $(addprefix $(BINDIR)/,$(UTILS))
 OBJS := $(addprefix $(OBJDIR)/,$(addsuffix .o,$(UTILS)))
